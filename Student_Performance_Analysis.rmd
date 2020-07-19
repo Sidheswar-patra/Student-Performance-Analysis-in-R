@@ -1,0 +1,259 @@
+---
+title: "Analysis of Student performance in Exam"
+author: "Sidheswar Patra"
+date: "02/01/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Introduction :
+Recent technological advancements have made it easier for Educational institutions to reap the benefits of their growing large data of students. Educational institutions can now derive insights that can be used to enhance the process of teaching and learning and to come up with innovative ideas to improve their curricula. Their use of data analysis  will have a huge effect on the way courses and institutions are promoted, curricula are organized and students are monitored and assisted. Educational institutions are adopting data analytics because of growing numbers of students and increased flexibility in the way they learn which has made it harder for the institutions to manually track students and provide help where appropriate. Using the power of data analytics will provide more insights to education providers about the factors that affect the success of their students.
+
+## 2. Research Question's :
+a) Comparison of subject wise scores between boys and girls and finding any patterns or insights from it.
+b) How can the teachers analyse and create groups of students for a review of the fundamentals based on the students assessment data?
+c) How does Parents Eductaion influence on students marks?
+d) How does Type of food intake influence on students marks?
+e) How does completion of Test Preparation course influence on students marks?
+
+## Hypothesis :
+a) Parents education does not influence students results.
+
+## Problem :
+Educational Institutions are trying to enhance their education system according to evolving technologies. Moreover these days, there are plenty of schools and institutions running and they are trying to stay ahead from others in the competition. So, how can they use their students data to find insights and act accordingly to improve students learning experience is a challenge.
+
+## 3. Rationale :
+We have considered data for 1000 students from a primary level school of United States. Due to security and privacy regulations the data is anonymous and doesnt contain any personal unique identifiers except their scores in Math, Reading and Writing. In addition to it, we have the students Parental level of Education data, type of food preffered by students data and the data of whether the students have completed the test preparation course prior to their exams. Through using r libraries like dplyr and ggplot, we will prepare the data and analyse the above research questions through visualizing and answer the same. Education is the basic fundamental block of acquiring knowledge and build a career for everyone, so I am inclined towards it and want to verify and analyse how external factors influence it.
+
+## 4. Data  Preparation and Manipulation :
+A minor manipulation on the data has been done, We have a created a new column named Total_Score which is the summation of Math_Score, Reading_Score and Writing_Score. Apart from it we also modified the column names to make them more appropriate for the analysis.
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+Extracting data from the csv file.
+```{r}
+Student_Data <- read.csv("StudentsPerformance.csv",header = TRUE)
+```
+Changing the column names for better meaning
+```{r}
+names(Student_Data) <- c("Gender", "Ethnicity", "Parents_Eductaion", "Lunch_Type", "Test_Preparation_Course", "Math_Score", "Reading_Score", "Writing_Score")
+```
+Creating a new column named Total_Score which is the cummulative score of all three subjects.
+```{r}
+Student_Data <- Student_Data %>% mutate(Total_Score = Math_Score + Reading_Score + Writing_Score)
+```
+Checking some records.
+```{r}
+tail(Student_Data)
+```
+
+## 5. Data Presentation :
+As our data is prepared now, we will analyse it through visualisation by using ggplot.
+
+# Lets see the Total score variations between boys and girls and analyse on their respective performance.
+
+```{r}
+ggplot(Student_Data, aes(x=Total_Score, fill=Gender))+geom_histogram(color = "black") + ylab("Students") + ggtitle("Students by Total Score")
+```
+From the above visualisation, we can observe that girls are leading in score range of 290-300 which is the highest range. Infact if we observe the scores above 250 then also girls are leading than boys. In between 150-250 score range, we can see its mostly proportional. However if we observe the score range of 0-50 and near it, then there are few girls and no boys. Moreover, we can see that few girls and boys have also failed, lets dig deep in subject wise analysis to get more insights.
+
+# Lets compare the Maths score between boys and girls and analyse on their performance.
+
+```{r}
+ggplot(data = Student_Data ,aes(x = Math_Score)) +
+  geom_histogram(bins = 20, colour = "black", fill = "green")  +
+  facet_grid(Gender ~.) +
+  scale_x_continuous(breaks = seq(0, 100, 10)) +
+  stat_bin(bins= 20, geom="text", aes(label=..count..) , 
+vjust = -1) + ylab("Number of Students")+ ggtitle("Students count by Math Score")+
+  ylim(0, 100)
+```
+We can observe that
+* 20 boys have secured greater than 90 whereas among girls, 15 have crossed this range.
+* In the score range of 70-90, 188 boys and 142 girls are there.
+* In score range of below 40 which is fail, 9 boys and 31 girls are there.
+* So, from the above analysis we can conclude that boys are performing better in Maths than girls overally and the teachers needs to focus more on girls to improve their performance.
+
+# Lets compare the Reading score between boys and girls and analyse on their performance.
+
+```{r}
+ggplot(data = Student_Data ,aes(x = Reading_Score)) +
+  geom_histogram(bins = 20, colour = "black", fill = "green")  +
+  facet_grid(Gender ~.) +
+  scale_x_continuous(breaks = seq(0, 100, 10)) +
+  stat_bin(bins= 20, geom="text", aes(label=..count..) , 
+vjust = -1) + ylab("Number of Students")+ ggtitle("Students count by Reading Score")+
+  ylim(0, 100)
+```
+We can observe that,
+*In score range of 90 above, 15 boys and 64 girls are there.
+*In score range between 70-90, 149 boys and 205 girls are there.
+*In score range below 40, 19 boys and 14 girls are there.
+*So, from the above analysis we can conclude that girls are better than boys overally in Reading section and teachers need to focus more on boys performance.
+
+# Lets compare the Writing score between boys and girls and analyse on their performance.
+
+```{r}
+ggplot(data = Student_Data ,aes(x = Writing_Score)) +
+  geom_histogram(bins = 20, colour = "black", fill = "green")  +
+  facet_grid(Gender ~.) +
+  scale_x_continuous(breaks = seq(0, 100, 10)) +
+  stat_bin(bins= 20, geom="text", aes(label=..count..) , 
+vjust = -1)  + ylab("Number of Students")+ ggtitle("Students count by Writing Score")+
+  ylim(0, 100)
+```
+We can observe that,
+*In score range of 90 above, 4 boys and 44 girls are there.
+*In score range between 70-90, 175  boys and 289 girls are there.
+*In score range below 40, 20 boys and 15 girls are there.
+*So, from the above analysis we can conclude that girls are better than boys overally in Writing section and teachers need to focus more on boys performance.
+
+# Lets see how does the completion of the Test preparation course affect on students marks on summation of all three section's scores.
+
+```{r}
+ggplot(data = Student_Data ,aes(x = Total_Score)) +
+  geom_histogram(bins = 20, colour = "black", fill = "green")  +
+  facet_grid(Test_Preparation_Course ~.) +
+  scale_x_continuous(breaks = seq(0, 300, 30)) +
+  stat_bin(bins= 20, geom="text", aes(label=..count..) , 
+vjust = -1)  + ylab("Number of Students")+ ggtitle("Students count by Total Score wrt Test course status")+
+  ylim(0, 120)
+```
+We can observe that more than 60% of students have not completed the course andaround 40% of students have completed the course,
+* In score range above 240, 112 students are there who have completed the course and 102 students who have not completed th course.
+* In score range below 120 which is basically fail, only 3 students are there who have completed the course however 31 students are there who have not completed the course.
+* So, from the above analysis we can see how important is Test preparation course completion prior to attending exams. 10 times more students have failed in the exams who have not completed the course than those who have completed.
+
+# lets see how the Test preparation course completion influence on Writing score.
+
+```{r}
+boxpt <- ggplot(Student_Data, aes(x = Gender, y = Writing_Score, color = Test_Preparation_Course)) + geom_boxplot() 
+boxpt <- boxpt + xlab("Gender") + ylab("Writing Scores") + ggtitle("Writing Scores by Gender wrt Test course status")
+boxpt
+```
+We can observe that,
+* Both boys and girls who have not completed Test preparation course are there in score range below 40 which is fail marks however only few girls have failed even after completing course.
+* The first quartile, median score and third quartile scores are better for both boys and girls who have completed the test preparation course.
+* So, from the above analysis we can infer that test preparation course completion is important for both boys and girls to achieve better results in writing.
+
+# Lets see how the Test preparation course completion influence on Reading score.
+
+```{r}
+b_Rs <- ggplot(Student_Data, aes(x = Gender, y = Reading_Score, color = Test_Preparation_Course)) + geom_boxplot() 
+b_Rs <- b_Rs + xlab("Gender") + ylab("Reading Scores") + ggtitle("Reading Scores by Gender wrt Test course status")
+b_Rs
+```
+We can observe that,
+* Both boys and girls who have not completed Test preparation course are there in score range below 40 which is fail marks however only few girls have just passed after completing course and nobody has failed among the students who completed the course.
+* The first quartile, median score and third quartile scores are better for both boys and girls who have completed the test preparation course.
+* So, from the above analysis we can infer that test preparation course completion is important for both boys and girls to achieve better results in Reading.
+
+# Lets see how the Test preparation course completion influence on Math score.
+
+```{r}
+b_Ms <- ggplot(Student_Data, aes(x = Gender, y = Math_Score, color = Test_Preparation_Course)) + geom_boxplot() 
+b_Ms <- b_Ms + xlab("Gender") + ylab("Math Scores") + ggtitle("Math Scores by Gender wrt Test course status")
+b_Ms
+```
+We can observe that,
+* Both boys and girls who have not completed Test preparation course are there in score range below 40 which is fail marks however only few girls have failed among the students who completed the course.
+* The first quartile, median score and third quartile scores are better for both boys and girls who have completed the test preparation course.
+* So, from the above analysis we can infer that test preparation course completion is important for both boys and girls to achieve better results in Math.
+
+# Lets see if there is a relation between Reading and Writing and how Test preparation course completion affects it.
+
+```{r}
+ggplot() +
+  geom_point(data = Student_Data, aes(x = Writing_Score, y = Reading_Score, col = Test_Preparation_Course)) +
+  xlab("Writing Score") +
+  ylab("Reading Score")
+```
+We can observe that,
+* Students who have completed the test preparation course have secured more marks in comparison to rest.
+* So, from the above analysis we can infer that test preparation course completion is important for all students to secure better results.
+
+# Lets see if type of Lunch taken by students affects their overall performance in all three subjects.
+
+```{r}
+ggplot(data = Student_Data ,aes(x = Total_Score)) +
+  geom_histogram(bins = 20, colour = "black", fill = "green")  +
+  facet_grid(Lunch_Type ~.) +
+  scale_x_continuous(breaks = seq(0, 300, 30)) +
+  stat_bin(bins= 20, geom="text", aes(label=..count..) , 
+vjust = -1) +  ylab("Number of Students")+ ggtitle("Students count by Total Score wrt Lunch Type")+
+  ylim(0, 120)
+```
+We can observe that,
+* 173 students have secured more than 240 score who take standard meal whereas only 41 students have secured this score range who take free/reduced meal. So, around 4 times more students have secured better results by taking good meal.
+* 427 students have secured in score range 150-240 who take standard meal whereas only 250 students have secured this score range who take free/reduced meal. So, around 2 times more students have secured better results by taking good meal. 
+* 8 students have secured below 120 who take standard meal whereas 26 students have secured this score range who take free/reduced meal. So, around 4 times more students have secured better results by taking good meal in here as well.
+* So, we can conclude that the type of food taken by students matters a lot and has tremendous effects on exam results. So students should eat nutricious foods for overall wellbeing and this would improve their performance.
+
+# Lets see if Parents education influence on students performance? We will check this subject-wise, lets start with Math.
+
+```{r, fig.width=10}
+ggplot(data = Student_Data, aes(x=factor(Parents_Eductaion),y = Writing_Score)) + 
+            geom_boxplot(col="black", fill = "blue", size = 0.1)+
+            ggtitle("Writing Score by Parents Education")+ xlab("Parents Education")+ ylab("Writing Score")+
+            facet_grid(Gender ~.) 
+```
+We can observe that,
+* Students whose parents have Master's degree have the best result as the first quartile, median and third quartile are high for master's degree.
+* Students whose parents had education only till high school or some college have the lowest first quartile, median and third quartile range's and even few students have failed.
+* So, from the above analysis we can infer that parents education level has significant effect on students performance which negates our hypothesis in Writing section.
+
+# Lets see if Parents education influence on students performance in Reading?
+
+```{r, fig.width= 10}
+ggplot(data = Student_Data, aes(x=factor(Parents_Eductaion),y = Reading_Score)) + 
+            geom_boxplot(col="black", fill = "blue", size = 0.1)+
+            ggtitle("Reading Score by Parents Education")+ xlab("Parents Education")+ ylab("Reading Score")+
+            facet_grid(Gender ~.) 
+```
+We can observe that,
+* Students whose parents have Master's degree have the best result.
+* Students whose parents had education only till high school or some college have the lowest first quartile, median and third quartile range's and even few students have failed.
+* So, from the above analysis we can infer that parents education level has significant effect on students performance which negates our hypothesis again in Reading section.
+
+# Lets see if Parents education influence on students performance in Math?
+
+```{r, fig.width=10}
+ggplot(data = Student_Data, aes(x=factor(Parents_Eductaion),y = Math_Score)) + 
+            geom_boxplot(col="black", fill = "blue", size = 0.1)+
+            ggtitle("Math Score by Parents Education")+ xlab("Parents Education")+ ylab("Math Score")+
+            facet_grid(Gender ~.)
+```
+We can observe that,
+* Students whose parents have Master's degree have the best result.
+* Students whose parents had education only till high school or some college have the lowest first quartile, median and third quartile range's and even few students have failed.
+* So, from the above analysis we can infer that parents education level has significant effect on students performance which negates our hypothesis in Math section as well.
+* So, from the above three subject-wise analysis we conclude that parents education level has influence on students results in all subjects as we saw the students who have failed or are there in lower score range have their parents education till high school or some college and the students who have best results have their parents education as Master's degree. 
+
+## 6. Conclusion :
+
+a) Parents education level affects students results which negates our hypothesis. Students secured more scores whose parents have higher level of education and vice-versa.
+
+b) Students who take standard type of lunch performed better than others. So, type of food has influence on students performance.
+
+c) Students who completed Test preparation course secured best results in all the subjects. 
+
+d) Boys are better in Math, which shows they are more technical oriented than girls overall.
+
+e) Girls are better in Reading and Writing sections which shows they are more creative than boys overall.
+
+
+## 7. Bibliography :
+
+Kaggle.com. (2020). Datasets | Kaggle. [online] Available at: https://www.kaggle.com/datasets [Accessed 8 Jan. 2020].
+
+Liu, M. and Huang, Y. (2017). The use of data science for education: The case of social-emotional learning. Smart Learning Environments, 4(1).
+
+Team, D. (2020). Data Science in Education - The Modern Way of Learning [Case Study] - DataFlair. [online] DataFlair. Available at: https://data-flair.training/blogs/data-science-in-education/ [Accessed 8 Jan. 2020].
+
